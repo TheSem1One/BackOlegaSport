@@ -8,8 +8,8 @@ import { userController, productController } from './controllers/index.js';
 import handleValidErrors from './utils/handleValidErrors.js';
 
 
-mongoose.connect(
-    'mongodb+srv://admin:admin@cluster0.apc7q.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster0')
+mongoose
+    .connect(process.env.MONGODB_URI)
     .then(() => console.log('DB ok '))
     .catch((err) => console.log('DB error', err));
 
@@ -34,7 +34,7 @@ app.use('/uploads', express.static('uploads'));
 app.post('/auth/login', loginValidation, handleValidErrors, userController.login)
 app.post('/auth/register', registerValidation, handleValidErrors, userController.register)
 app.get('/profile', checkAuth, userController.profile);
-app.patch('/profile',checkAuth,userController.update);
+app.patch('/profile', checkAuth, userController.update);
 app.post('/uploads', checkAuth, uploads.single('image'), (req, res) => {
     res.json({
         url: `/uploads/${req.file.originalname}`,
@@ -47,7 +47,7 @@ app.post('/products', checkAuth, productCreateValidation, handleValidErrors, pro
 app.delete('/products/:id', checkAuth, productController.remove);
 app.patch('/products/:id', checkAuth, productCreateValidation, handleValidErrors, productController.update);
 
-app.listen(4444, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
     if (err) {
         return console.log(err);
     }
